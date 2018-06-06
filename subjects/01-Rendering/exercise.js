@@ -30,12 +30,15 @@ const DATA = {
 };
 function Menu() {
 
-  const mexican = DATA.items
-    .filter(item => item.type === 'mexican' )
-    .map(<li key={item.id}>{item.name}</li>);
+  // const mexican = DATA.items
+  //   .filter(item => item.type === 'mexican' )
+  //   .map(<li key={item.id}>{item.name}</li>);
   return <div>
   <h1>{DATA.title}</h1>
-  {DATA.mexican}
+  <ul>{DATA.items
+    .filter(item => item.type === 'mexican' )
+    .map(item => <li>{item.name}</li>)}
+    </ul>
   </div>;
 }
 
