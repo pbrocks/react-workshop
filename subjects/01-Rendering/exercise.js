@@ -28,9 +28,15 @@ const DATA = {
     { id: 6, name: "black pudding", type: "english" }
   ]
 };
-
 function Menu() {
-  return <div>Open the console, you have failing tests.</div>;
+
+  const mexican = DATA.items
+    .filter(item => item.type === 'mexican' )
+    .map(<li key={item.id}>{item.name}</li>);
+  return <div>
+  <h1>{DATA.title}</h1>
+  {DATA.mexican}
+  </div>;
 }
 
 ReactDOM.render(<Menu />, document.getElementById("app"));
