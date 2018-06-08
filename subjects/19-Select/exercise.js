@@ -15,17 +15,58 @@ class Select extends React.Component {
     value: PropTypes.any,
     defaultValue: PropTypes.any
   };
+    state = {
+      showOptions: false,
+      value: this.props.defaultValue
+    };
+    toggleOptions = () => {
+      this.setState(state =>({
+        showingOptions: !state.showingOptions
+      }));
+    };
 
-  render() {
-    return (
-      <div className="select">
-        <div className="label">
-          label <span className="arrow">▾</span>
+      isControlled() {
+        return this.props.value != null;
+      }
+
+    render() {
+      const { value } = this.isControlled() ? this.props : this.state;
+      // const { value } =  this.state;
+
+      let label;
+      const children = React.Children.map(this.props.children, child => {
+        if (child.props.value === value) {
+          label = child.props.children;
+        }
+
+        return React.cloneElement(child, {
+          onSelect: () => {
+            if (this.isControlled()) {
+              if (this.props.onChange) {
+                this.props.onChange(child.props.value);
+              }
+            } else {
+              this.setState({ value: child.props.value }, () => {
+                if (this.props.onChange) {
+                  this.props.onChange(this.state.value);
+                }
+              });
+            }
+          }
+        });
+      });
+
+      return (
+        <div className="select" onClick={this.toggleOptions}>
+          <div className="label">
+            {label} <span className="arrow">▾</span>
+          </div>
+          {this.state.showOptions && (
+            <div className="options">{children}</div>
+          )}
         </div>
-        <div className="options">{this.props.children}</div>
-      </div>
-    );
-  }
+      );
+    }
 }
 
 class Option extends React.Component {
@@ -48,6 +89,17 @@ class App extends React.Component {
       <div>
         <h1>Select</h1>
 
+        <h2>Uncontrolled</h2>
+        <Select defaultValue="tikka-masala"
+
+            defaultValue={this.state.selectValue}
+            onChange={selectValue => this.setState({ selectValue })}
+          >
+          <Option value="tikka-masala">Tikka Masala</Option>
+          <Option value="tandoori-chicken">Tandoori Chicken</Option>
+          <Option value="dosa">Dosa</Option>
+          <Option value="mint-chutney">Mint Chutney</Option>
+        </Select>
         <h2>Controlled</h2>
         <pre>{JSON.stringify(this.state, null, 2)}</pre>
         <p>
@@ -66,13 +118,6 @@ class App extends React.Component {
           <Option value="mint-chutney">Mint Chutney</Option>
         </Select>
 
-        <h2>Uncontrolled</h2>
-        <Select defaultValue="tikka-masala">
-          <Option value="tikka-masala">Tikka Masala</Option>
-          <Option value="tandoori-chicken">Tandoori Chicken</Option>
-          <Option value="dosa">Dosa</Option>
-          <Option value="mint-chutney">Mint Chutney</Option>
-        </Select>
       </div>
     );
   }

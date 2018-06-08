@@ -19,7 +19,9 @@ history.push('/something')
 
 class Router extends React.Component {
   history = createHashHistory();
-
+  state = {
+    location: this.history.location
+  }
   render() {
     return this.props.children;
   }

@@ -14,20 +14,47 @@
 // - Send the values of all the <TextInput>s to the <Form onSubmit> handler
 //   without using DOM traversal APIs
 // - Implement a <ResetButton> that resets the <TextInput>s in the form
+//
+// We don't know how deeply nested the lower stuff is
 ////////////////////////////////////////////////////////////////////////////////
+import "./style.css";
+
 import React from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 
+const FormContext = React.createContext();
+
 class Form extends React.Component {
+  handleSubmit = () => {
+    if (this.props.onSubmit) this.this.props.onSubmit();
+  };
   render() {
-    return <div>{this.props.children}</div>;
+    return (
+      <FormContext.Provider
+        value={{
+          change: this.handleChange,
+          submit: this.handleSubmit
+        }}
+      >
+        <div>{this.props.children}</div>
+      </FormContext.Provider>
+    );
   }
 }
 
+
 class SubmitButton extends React.Component {
   render() {
-    return <button>{this.props.children}</button>;
+    return (
+      <FormContext.Consumer>
+        {context => (
+          <button onClick={context.submit}>
+            {this.props.children}
+          </button>
+        )}
+      </FormContext.Consumer>
+    );
   }
 }
 
@@ -50,7 +77,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="grid-wrapper">
         <h1>
           This isn't even my final <code>&lt;Form/&gt;</code>!
         </h1>
